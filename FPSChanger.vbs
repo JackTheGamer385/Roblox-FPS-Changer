@@ -9,20 +9,20 @@ Set Shell = CreateObject("WScript.Shell")
 Set Fso = CreateObject("Scripting.FileSystemObject")
 Set Http = CreateObject("MSXML2.XMLHTTP")
 
-HelpText = "Help" & vbCrLf & vbCrLf & _
-"How to Use" & vbCrLf & _
+HelpText = "Help:" & vbCrLf & vbCrLf & _
+"How to Use:" & vbCrLf & _
 "1. Close Roblox before running the FPS Changer." & vbCrLf & _
 "2. If Roblox is open, choose Yes to close it or Cancel to stop." & vbCrLf & _
 "3. Enter the FPS you want." & vbCrLf & _
 "4. Setting the FPS to 0 will make it uncapped." & vbCrLf & _
 "5. After the FPS is changed, reopen Roblox." & vbCrLf & vbCrLf & _
-"How It Works" & vbCrLf & _
+"How It Works:" & vbCrLf & _
 "The tool updates Roblox’s client settings file and changes the FramerateCap value." & vbCrLf & _
 "This is a normal client-side setting and does not modify gameplay, memory, or anything unsafe." & vbCrLf & _
 "It is allowed by Roblox TOS because it only adjusts a configuration value Roblox already uses." & vbCrLf & vbCrLf & _
-"Support" & vbCrLf & _
+"Support:" & vbCrLf & _
 "If you need help, contact @jackthegamer385 on Discord." & vbCrLf & vbCrLf & _
-"GitHub Page" & vbCrLf & _
+"GitHub Page:" & vbCrLf & _
 "https://github.com/JackTheGamer385/Roblox-FPS-Changer"
 
 LocalPath = WScript.ScriptFullName
