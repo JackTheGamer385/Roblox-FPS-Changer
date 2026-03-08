@@ -1,20 +1,61 @@
 Option Explicit
 
-Dim Shell, Fso, FilePath, XmlText, FpsValue, NewText, RegEx, File, RobloxOpen, HelpText, InputValue, CurrentFps, Match
+Dim ScriptVersion
+ScriptVersion = "1"
+
+Dim Shell, Fso, Http, GitText, GitVersion, LocalPath, File, XmlText, RegEx, Match, CurrentFps, FpsValue, InputValue, HelpText, RobloxOpen
 
 Set Shell = CreateObject("WScript.Shell")
 Set Fso = CreateObject("Scripting.FileSystemObject")
+Set Http = CreateObject("MSXML2.XMLHTTP")
 
 HelpText = "How To Use:" & vbCrLf & _
 "1. Make sure Roblox is closed before running this tool." & vbCrLf & _
 "2. If Roblox is open, type 'yes' to close it or 'cancel' to stop." & vbCrLf & _
 "3. Enter the FPS you want. Set 0 for uncapped." & vbCrLf & _
-"4. Open Roblox again after the FPS is changed."
+"4. If an update is available, you can choose to install it." & vbCrLf & _
+"5. GitHub Page:" & vbCrLf & _
+"https://github.com/JackTheGamer385/Roblox-FPS-Changer/tree/main"
+
+LocalPath = WScript.ScriptFullName
+
+Http.Open "GET", "https://raw.githubusercontent.com/JackTheGamer385/Roblox-FPS-Changer/refs/heads/main/FPSChanger.vbs", False
+Http.Send
+
+If Http.Status = 200 Then
+    GitText = Http.ResponseText
+    Dim RegVer
+    Set RegVer = New RegExp
+    RegVer.Pattern = "ScriptVersion\s*=\s*""(.*?)"""
+    RegVer.Global = False
+    Set Match = RegVer.Execute(GitText)
+    If Match.Count > 0 Then
+        GitVersion = Match(0).SubMatches(0)
+        If GitVersion <> ScriptVersion Then
+            InputValue = InputBox("A newer version of the FPS Changer is available." & vbCrLf & _
+            "Current version: " & ScriptVersion & vbCrLf & _
+            "Latest version: " & GitVersion & vbCrLf & vbCrLf & _
+            "Type 'yes' to update, 'cancel' to skip, or 'help' for instructions.", "Update Available")
+            
+            If InputValue = "" Or LCase(InputValue) = "cancel" Then
+            ElseIf LCase(InputValue) = "help" Then
+                MsgBox HelpText, vbInformation, "Help"
+            ElseIf LCase(InputValue) = "yes" Then
+                Set File = Fso.OpenTextFile(LocalPath, 2)
+                File.Write GitText
+                File.Close
+                MsgBox "Updated successfully. Please reopen the script.", vbInformation, "Updated"
+                WScript.Quit
+            End If
+        End If
+    End If
+End If
 
 RobloxOpen = Shell.AppActivate("Roblox")
 
 If RobloxOpen Then
-    InputValue = InputBox("Roblox is currently open." & vbCrLf & "Type 'yes' to close it, 'cancel' to stop, or 'help' for instructions.", "Roblox Open")
+    InputValue = InputBox("Roblox is currently open." & vbCrLf & _
+    "Type 'yes' to close it, 'cancel' to stop, or 'help' for instructions.", "Roblox Open")
     
     If InputValue = "" Or LCase(InputValue) = "cancel" Then
         WScript.Quit
@@ -32,6 +73,7 @@ If RobloxOpen Then
     End If
 End If
 
+Dim FilePath
 FilePath = "C:\Users\" & CreateObject("WScript.Network").UserName & "\AppData\Local\Roblox\GlobalBasicSettings_13.xml"
 
 If Not Fso.FileExists(FilePath) Then
@@ -55,7 +97,9 @@ Else
     CurrentFps = "Unknown"
 End If
 
-FpsValue = InputBox("Your current FPS cap is: " & CurrentFps & vbCrLf & vbCrLf & "Enter the FPS you want to set." & vbCrLf & "Type 'help' for instructions or 'cancel' to stop.", "FPS Changer")
+FpsValue = InputBox("Your current FPS cap is: " & CurrentFps & vbCrLf & vbCrLf & _
+"Enter the FPS you want to set." & vbCrLf & _
+"Type 'help' for instructions or 'cancel' to stop.", "FPS Changer")
 
 If FpsValue = "" Or LCase(FpsValue) = "cancel" Then
     WScript.Quit
@@ -71,6 +115,7 @@ If Not IsNumeric(FpsValue) Then
     WScript.Quit
 End If
 
+Dim NewText
 NewText = "<int name=""FramerateCap"">" & FpsValue & "</int>"
 
 XmlText = RegEx.Replace(XmlText, NewText)
@@ -79,7 +124,8 @@ Set File = Fso.OpenTextFile(FilePath, 2)
 File.Write XmlText
 File.Close
 
-InputValue = InputBox("FPS changed to " & FpsValue & "." & vbCrLf & "Type 'help' for instructions or press OK to finish.", "Done")
+InputValue = InputBox("FPS changed to " & FpsValue & "." & vbCrLf & _
+"Type 'help' for instructions or press OK to finish.", "Done")
 
 If LCase(InputValue) = "help" Then
     MsgBox HelpText, vbInformation, "Help"
